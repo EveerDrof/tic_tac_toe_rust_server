@@ -1,0 +1,23 @@
+API:
+POST /create-game
+     returns new game id and 201 code.Client saves that id and makes requests to check if somebody joined
+GET /check-if-joined/{game-id}
+    Returns true if another player joined or false in another case.
+    404 if game not found
+POST /join/{game-id|random}
+    Changes state of the  game and returns true in /check-if-joined/
+    if no such game - returns 404
+    If success returns 200.
+    Returns game-id
+POST /turn/{game-id}?x=<int>&y=<int>&turn_type=<true|false>
+    Changes map of the game
+    if no such game - returns 404
+GET /game-state/{game-id}
+    returns game state
+    if no such game - returns 404
+
+
+
+### Unimportant
+GET /games-list/
+     returns list of games
