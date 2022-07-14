@@ -77,6 +77,9 @@ impl AppData {
     pub fn check_if_game_is_started(&self, game_id: u128) -> bool {
         !self.started_games.get(&game_id).is_none()
     }
+    pub fn get_available_games_number(&self) -> usize {
+        return self.waiting_games.len();
+    }
 }
 
 #[post("/create-game")]
@@ -87,7 +90,12 @@ async fn create_game(data: Data<Mutex<AppData>>) -> impl Responder {
 }
 #[post("/join/{game_id}")]
 async fn join_game(data: Data<Mutex<AppData>>, game_id: web::Path<String>) -> impl Responder {
-    HttpResponse::Ok().body(format!("{}", data.lock().unwrap().pop_first_waiting_game()))
+    let mut locked = data.lock().unwrap();
+    if locked.get_available_games_number() > 0 {
+        HttpResponse::Ok().body(format!("{}", locked.pop_first_waiting_game()))
+    } else {
+        HttpResponse::NoContent().body("No availbale games stated")
+    }
 }
 #[get("/check-if-joined/{game_id}")]
 async fn check_if_joined(data: Data<Mutex<AppData>>, game_id: web::Path<String>) -> impl Responder {
