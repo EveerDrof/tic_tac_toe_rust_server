@@ -11,3 +11,5 @@ serde_json = "*"
 serde = {version = "*",features = ["derive"]}
 lazy_static = "*"
 serde_urlencoded = "*"
+log = "*"
+env_logger = "*"

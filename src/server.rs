@@ -5,6 +5,8 @@ use actix_web::{
     web::{self, Data},
     App, HttpResponse, HttpResponseBuilder, HttpServer, Responder,
 };
+use env_logger::init_from_env;
+use log::{debug, error, info, log_enabled, Level};
 use serde::Deserialize;
 use serde_json::{json, Value};
 use std::{
@@ -177,10 +179,12 @@ async fn game_state(data: Data<Mutex<AppData>>, game_id: web::Path<String>) -> i
             .to_string(),
     )
 }
+
 pub async fn server() -> Result<(), Error> {
     let data = Data::new(Mutex::new(AppData::new()));
     HttpServer::new(move || {
         App::new()
+            .wrap(Logger::default())
             .app_data(data.clone())
             .route("/server", web::get().to(|| async { "Hello World!" }))
             .service(create_game)
@@ -188,7 +192,6 @@ pub async fn server() -> Result<(), Error> {
             .service(check_if_joined)
             .service(turn)
             .service(game_state)
-            .wrap(actix_web::middleware::Logger::default())
     })
     .bind(("127.0.0.1", 1111))?
     .run()
